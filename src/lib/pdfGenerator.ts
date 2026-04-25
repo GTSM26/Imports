@@ -3,10 +3,34 @@ import autoTable from 'jspdf-autotable';
 import { TransportOp } from '../types';
 import { formatCurrency } from './utils';
 
-export const generateBCD = (op: TransportOp, eurMadRate?: string) => {
+export const generateBCD = async (op: TransportOp, defaultRate?: string) => {
   // Check if Reference Dossier exists
   if (!op.refDossier || op.refDossier.trim() === '') {
     return;
+  }
+
+  let finalRate = op.tauxChange || defaultRate;
+
+  // If no rate is provided in the operation but we have a date, try to fetch historical rate
+  if (!op.tauxChange && op.dateChargement && op.dateChargement.includes('/')) {
+    try {
+      const [d, m, y] = op.dateChargement.split('/');
+      // Ensure we have a valid date part
+      if (y && m && d && y.length === 4) {
+        const dateFormatted = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        
+        // Frankfurter API is great for historical EUR/MAD
+        const response = await fetch(`https://api.frankfurter.app/${dateFormatted}?to=MAD`);
+        const data = await response.json();
+        
+        if (data.rates && data.rates.MAD) {
+          finalRate = data.rates.MAD.toFixed(4);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch historical rate:', err);
+      // Fallback to defaultRate (already set in finalRate)
+    }
   }
 
   const doc = new jsPDF();
@@ -76,11 +100,11 @@ export const generateBCD = (op: TransportOp, eurMadRate?: string) => {
   doc.text(operationDate, boxX + 55, boxY + 15);
 
   // Exchange Rate (BKAM)
-  if (eurMadRate) {
+  if (finalRate) {
     doc.setFontSize(7);
     doc.setTextColor(120);
     doc.setFont('helvetica', 'italic');
-    doc.text(`Taux de change (BKAM): 1 EUR = ${eurMadRate} MAD`, boxX + 5, boxY + boxHeight + 4);
+    doc.text(`Taux de change (BKAM): 1 EUR = ${finalRate} MAD`, boxX + 5, boxY + boxHeight + 4);
   }
 
   // --- MAIN CONTENT ---

@@ -151,9 +151,9 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed left-0 top-0 z-50 h-full w-80 bg-white dark:bg-slate-900 shadow-2xl flex flex-col"
+              className="fixed left-0 top-0 z-50 h-full w-80 bg-card-bg dark:bg-slate-900 shadow-2xl flex flex-col"
             >
-              <div className="px-5 py-4 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+              <div className="px-5 py-4 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-bg to-card-bg dark:from-slate-950 dark:to-slate-900">
                 <div className="flex items-center gap-3">
                   <div className="bg-accent/10 p-2 rounded-lg">
                     <SlidersHorizontal size={18} className="text-accent" />
@@ -183,21 +183,6 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               </div>
 
               <div className="flex-1 overflow-y-auto">
-                <div className="py-4">
-                  <div className="px-4 mb-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                      <input
-                        type="text"
-                        placeholder="Rechercher..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="input-modern w-full pl-9 pr-4"
-                      />
-                    </div>
-                  </div>
-                </div>
-
                 <FilterSection title="Année" defaultOpen={true}>
                   <div className="flex flex-wrap gap-2">
                     <button

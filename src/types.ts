@@ -18,6 +18,8 @@ export interface TransportOp {
   numTracteur: string;
   status: string;
   observations: string;
+  tauxChange?: string;
+  incident?: string;
 }
 
 export type TransportStatus = 'En Transit' | 'Chargé' | 'Embarqué' | 'Arrivée' | string;

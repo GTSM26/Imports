@@ -8,13 +8,15 @@ import { motion } from 'motion/react';
 
 interface DataTableProps {
   data: TransportOp[];
+  search: string;
+  setSearch: (val: string) => void;
   onRowClick: (op: TransportOp) => void;
   onExport: () => void;
   onReset: () => void;
   eurMadRate?: string;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick, onExport, onReset, eurMadRate }) => {
+export const DataTable: React.FC<DataTableProps> = ({ data, search, setSearch, onRowClick, onExport, onReset, eurMadRate }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<keyof TransportOp | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -66,14 +68,25 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick, onExport
   return (
     <div className="flex-1 min-w-0">
       <div className="card-base h-full flex flex-col">
-        <div className="px-5 py-4 border-b border-slate-200/50 dark:border-slate-700/30 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="px-5 py-4 border-b border-slate-200/50 dark:border-slate-700/30 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
             <h2 className="text-sm font-bold text-ink uppercase tracking-widest flex items-center gap-3">
               Opérations de Transport
               <span className="bg-gradient-to-r from-accent to-blue-700 text-white px-3 py-1 rounded-full text-[11px] tabular-nums shadow-md">
                 {data.length}
               </span>
             </h2>
+
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="input-modern w-full pl-9 pr-4 py-1.5 text-xs"
+              />
+            </div>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -87,27 +100,36 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick, onExport
         </div>
 
         <div className="flex-1 overflow-auto">
-          <table className="w-full text-left border-collapse min-w-[1000px]">
+            <table className="w-full text-left border-collapse min-w-[1300px]">
             <thead className="sticky top-0 z-10">
               <tr className="bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-800/60 dark:to-slate-800/40 backdrop-blur-sm text-[10px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400 border-b border-slate-200/50 dark:border-slate-700/30">
-                <th className="px-5 py-4 cursor-pointer hover:text-accent transition-colors" onClick={() => handleSort('dateChargement')}>
+                <th className="px-4 py-4 cursor-pointer hover:text-accent transition-colors w-[100px]" onClick={() => handleSort('dateChargement')}>
                   <div className="flex items-center gap-1.5">Date <SortIcon field="dateChargement" /></div>
                 </th>
-                <th className="px-5 py-4 cursor-pointer hover:text-accent transition-colors" onClick={() => handleSort('pays')}>
+                <th className="px-4 py-4 cursor-pointer hover:text-accent transition-colors w-[120px]" onClick={() => handleSort('pays')}>
                   <div className="flex items-center gap-1.5">Pays <SortIcon field="pays" /></div>
                 </th>
-                <th className="px-5 py-4">Lieu de Chargement</th>
-                <th className="px-5 py-4">Réf Dossier</th>
-                <th className="px-5 py-4 cursor-pointer hover:text-accent transition-colors text-right" onClick={() => handleSort('prixAchat')}>
+                <th className="px-4 py-4 cursor-pointer hover:text-accent transition-colors w-[110px]" onClick={() => handleSort('type')}>
+                  <div className="flex items-center gap-1.5">Type <SortIcon field="type" /></div>
+                </th>
+                <th className="px-4 py-4 min-w-[200px]">Lieu de Chargement</th>
+                <th className="px-4 py-4 w-[110px]">Réf Dossier</th>
+                <th className="px-4 py-4 w-[110px] cursor-pointer hover:text-accent transition-colors" onClick={() => handleSort('numRemorque')}>
+                  <div className="flex items-center gap-1.5">N° Remorque <SortIcon field="numRemorque" /></div>
+                </th>
+                <th className="px-4 py-4 w-[110px] cursor-pointer hover:text-accent transition-colors" onClick={() => handleSort('numTracteur')}>
+                  <div className="flex items-center gap-1.5">N° Tracteur <SortIcon field="numTracteur" /></div>
+                </th>
+                <th className="px-4 py-4 cursor-pointer hover:text-accent transition-colors text-right w-[110px]" onClick={() => handleSort('prixAchat')}>
                   <div className="flex items-center gap-1.5 justify-end">Prix Achat <SortIcon field="prixAchat" /></div>
                 </th>
-                <th className="px-5 py-4 cursor-pointer hover:text-accent transition-colors" onClick={() => handleSort('status')}>
+                <th className="px-4 py-4 cursor-pointer hover:text-accent transition-colors w-[120px]" onClick={() => handleSort('status')}>
                   <div className="flex items-center gap-1.5">Status <SortIcon field="status" /></div>
                 </th>
-                <th className="px-5 py-4 text-center cursor-pointer hover:text-accent transition-colors" onClick={() => handleSort('agenceMA')}>
+                <th className="px-4 py-4 text-center cursor-pointer hover:text-accent transition-colors w-[100px]" onClick={() => handleSort('agenceMA')}>
                   <div className="flex items-center gap-1.5 justify-center">Agence <SortIcon field="agenceMA" /></div>
                 </th>
-                <th className="px-5 py-4 text-center">BCD</th>
+                <th className="px-4 py-4 text-center w-[80px]">BCD</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50 dark:divide-slate-800/30">
@@ -121,26 +143,43 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick, onExport
                     onClick={() => onRowClick(row)}
                     className="table-row cursor-pointer"
                   >
-                    <td className="px-5 py-4 text-xs font-medium tabular-nums">{row.dateChargement}</td>
-                    <td className="px-5 py-4 text-xs font-bold text-ink">{row.pays}</td>
-                    <td className="px-5 py-4 text-xs truncate max-w-[200px] text-text-muted" title={row.lieuChargement}>{row.lieuChargement}</td>
-                    <td className="px-5 py-4 text-[11px] font-mono font-bold text-accent">
+                    <td className="px-4 py-4 text-xs font-medium tabular-nums whitespace-nowrap">{row.dateChargement}</td>
+                    <td className="px-4 py-4 text-xs font-bold text-ink whitespace-nowrap">{row.pays}</td>
+                    <td className="px-4 py-4">
+                      <span className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-bold uppercase border",
+                        row.type === 'Complet' ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800" :
+                        row.type === 'Groupage' ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800" :
+                        row.type === 'Express' ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800" :
+                        "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                      )}>
+                        {row.type || '-'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-xs truncate max-w-[250px] text-text-muted" title={row.lieuChargement}>{row.lieuChargement}</td>
+                    <td className="px-4 py-4 text-[11px] font-mono font-bold text-accent whitespace-nowrap">
                       {row.refDossier}
                     </td>
-                    <td className="px-5 py-4 text-xs font-bold text-right tabular-nums">
+                    <td className="px-4 py-4 text-[11px] font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap uppercase">
+                      {row.numRemorque || '-'}
+                    </td>
+                    <td className="px-4 py-4 text-[11px] font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap uppercase">
+                      {row.numTracteur || '-'}
+                    </td>
+                    <td className="px-4 py-4 text-xs font-bold text-right tabular-nums whitespace-nowrap">
                       {formatCurrency(row.prixAchat)}
                     </td>
-                    <td className="px-5 py-4"><StatusBadge status={row.status} /></td>
-                    <td className="px-5 py-4 text-center text-[10px] font-bold text-accent">
+                    <td className="px-4 py-4"><StatusBadge status={row.status} /></td>
+                    <td className="px-4 py-4 text-center text-[10px] font-bold text-accent whitespace-nowrap">
                       {row.agenceMA || '-'}
                     </td>
-                    <td className="px-5 py-4 text-center">
+                    <td className="px-4 py-4 text-center">
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          if (row.refDossier) generateBCD(row, eurMadRate);
+                          if (row.refDossier) await generateBCD(row, eurMadRate);
                         }}
                         disabled={!row.refDossier}
                         className={cn(
@@ -159,7 +198,8 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick, onExport
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="px-5 py-20 text-center">
+                  <td colSpan={11} className="px-5 py-20 text-center">
+
                     <div className="flex flex-col items-center gap-3">
                       <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-full">
                         <Search size={28} className="text-slate-400" />

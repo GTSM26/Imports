@@ -11,8 +11,12 @@ import { CSV_URL } from './constants';
 import { parsePrice } from './lib/utils';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
+import { CarrierAnalyticsDashboard } from './components/analytics/CarrierAnalyticsDashboard';
+
 export default function App() {
   const [data, setData] = useState<TransportOp[]>([]);
+  const [currentView, setCurrentView] = useState<'operations' | 'analytics'>('operations');
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
@@ -90,6 +94,8 @@ export default function App() {
               numTracteur: (row['N°: Tracteur'] || row['N° Tracteur'] || '').trim(),
               status: (row['Status'] || '').trim(),
               observations: (row['Observations'] || '').trim(),
+              tauxChange: (row['Taux'] || row['Taux Change'] || row['Cours'] || '').trim(),
+              incident: (row['Incident'] || row['Incidents'] || '').trim(),
             };
           });
 
@@ -311,10 +317,12 @@ export default function App() {
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
         isRefreshing={isRefreshing}
+        currentView={currentView}
+        onViewChange={setCurrentView}
       />
       
       <main className="flex flex-col gap-4">
-        <KPICards stats={stats} />
+        {currentView === 'operations' && <KPICards stats={stats} />}
         
         <FilterSidebar 
           search={search} setSearch={setSearch}
@@ -342,16 +350,22 @@ export default function App() {
           onReset={handleResetFilters}
         />
 
-        <div className="flex flex-col lg:flex-row gap-6 px-6 pb-6 min-h-[400px]">
-          <DataTable 
-            data={filteredData} 
-            onRowClick={handleRowClick}
-            onExport={handleExport}
-            onReset={handleResetFilters}
-            eurMadRate={eurMadRate}
-          />
-          <ChartsSection data={filteredData} isDarkMode={isDarkMode} />
-        </div>
+        {currentView === 'operations' ? (
+          <div className="flex flex-col lg:flex-row gap-6 px-6 pb-6 min-h-[400px]">
+            <DataTable 
+              data={filteredData} 
+              search={search}
+              setSearch={setSearch}
+              onRowClick={handleRowClick}
+              onExport={handleExport}
+              onReset={handleResetFilters}
+              eurMadRate={eurMadRate}
+            />
+            <ChartsSection data={filteredData} isDarkMode={isDarkMode} />
+          </div>
+        ) : (
+          <CarrierAnalyticsDashboard data={filteredData} isDarkMode={isDarkMode} />
+        )}
       </main>
 
       <DetailDrawer 

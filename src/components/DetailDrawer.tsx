@@ -20,7 +20,7 @@ const DetailItem = ({ icon: Icon, label, value, fullWidth = false }: { icon: any
       </div>
       <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{label}</span>
     </div>
-    <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 break-words ml-9">
+    <div className="text-sm font-semibold text-ink break-words ml-9">
       {value || <span className="text-slate-400 italic">Non renseigné</span>}
     </div>
   </div>
@@ -46,9 +46,9 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ isOpen, onClose, op,
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-card-bg dark:bg-slate-900 shadow-2xl flex flex-col"
           >
-            <div className="px-6 py-5 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+            <div className="px-6 py-5 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between bg-gradient-to-r from-bg to-card-bg dark:from-slate-950 dark:to-slate-900">
               <div className="flex items-center gap-4">
                 <div className="bg-gradient-to-br from-accent to-blue-700 p-2.5 rounded-xl shadow-lg">
                   <Hash size={18} className="text-white" />
@@ -121,11 +121,11 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ isOpen, onClose, op,
               </div>
             </div>
 
-            <div className="p-5 border-t border-slate-200/50 dark:border-slate-700/50 bg-white dark:bg-slate-900 flex gap-3">
+            <div className="p-5 border-t border-slate-200/50 dark:border-slate-700/50 bg-card-bg dark:bg-slate-900 flex gap-3">
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => op.refDossier && generateBCD(op, eurMadRate)}
+                onClick={async () => op.refDossier && await generateBCD(op, eurMadRate)}
                 disabled={!op.refDossier}
                 className={cn(
                   "flex-1 py-3 px-4 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-xl shadow-lg",

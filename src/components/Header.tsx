@@ -9,6 +9,8 @@ interface HeaderProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   isRefreshing: boolean;
+  currentView: 'operations' | 'analytics';
+  onViewChange: (view: 'operations' | 'analytics') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -16,7 +18,9 @@ export const Header: React.FC<HeaderProps> = ({
   onRefresh, 
   isDarkMode, 
   toggleDarkMode,
-  isRefreshing
+  isRefreshing,
+  currentView,
+  onViewChange
 }) => {
   return (
     <header className="header-theme sticky top-0 z-40 w-full flex items-center justify-between px-6">
@@ -42,6 +46,35 @@ export const Header: React.FC<HeaderProps> = ({
                </span>
              </div>
            )}
+        </div>
+      </div>
+
+      <div className="flex-1 flex justify-center">
+        <div className="bg-slate-900/50 dark:bg-slate-800/80 p-1 rounded-xl flex items-center gap-1 border border-slate-700/50">
+          <button
+            onClick={() => onViewChange('operations')}
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+              currentView === 'operations' 
+                ? "bg-slate-800 dark:bg-slate-700 text-white shadow-md" 
+                : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+            )}
+          >
+            <Activity size={14} className="inline-block mr-2" />
+            Opérations
+          </button>
+          <button
+            onClick={() => onViewChange('analytics')}
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+              currentView === 'analytics' 
+                ? "bg-slate-800 dark:bg-slate-700 text-white shadow-md" 
+                : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+            )}
+          >
+            <Activity size={14} className="inline-block mr-2" />
+            Performance
+          </button>
         </div>
       </div>
 
