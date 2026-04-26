@@ -24,7 +24,8 @@ export const generateBCD = async (op: TransportOp, defaultRate?: string) => {
         const data = await response.json();
         
         if (data.rates && data.rates.MAD) {
-          finalRate = data.rates.MAD.toFixed(4);
+          const adjustedRate = data.rates.MAD - 0.0145;
+          finalRate = adjustedRate.toFixed(4);
         }
       }
     } catch (err) {

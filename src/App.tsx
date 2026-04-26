@@ -43,7 +43,7 @@ export default function App() {
   const [bcd, setBcd] = useState('Tous');
   const [mpl, setMpl] = useState('Tous');
   const [agenceMA, setAgenceMA] = useState('Tous');
-  const [eurMadRate, setEurMadRate] = useState('10.85');
+  const [eurMadRate, setEurMadRate] = useState('10.8500');
 
   // Selected Detail
   const [selectedOp, setSelectedOp] = useState<TransportOp | null>(null);
@@ -55,7 +55,7 @@ export default function App() {
     
     setError(null);
 
-    Papa.parse(CSV_URL, {
+    Papa.parse(`${CSV_URL}&_t=${new Date().getTime()}`, {
       download: true,
       header: true,
       skipEmptyLines: true,
@@ -131,7 +131,8 @@ export default function App() {
         const response = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
         const data = await response.json();
         if (data.rates && data.rates.MAD) {
-          setEurMadRate(data.rates.MAD.toFixed(2));
+          const adjustedRate = data.rates.MAD - 0.0145;
+          setEurMadRate(adjustedRate.toFixed(4));
         }
       } catch (err) {
         console.error('Failed to fetch EUR/MAD rate:', err);
