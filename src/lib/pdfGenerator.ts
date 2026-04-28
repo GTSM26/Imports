@@ -19,12 +19,19 @@ export const generateBCD = async (op: TransportOp, defaultRate?: string) => {
       if (y && m && d && y.length === 4) {
         const dateFormatted = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
         
-        // Frankfurter API is great for historical EUR/MAD
-        const response = await fetch(`https://api.frankfurter.app/${dateFormatted}?to=MAD`);
-        const data = await response.json();
+        // fawazahmed0 Currency API is great for historical EUR/MAD
+        let data;
+        try {
+          const response = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${dateFormatted}/v1/currencies/eur.json`);
+          data = await response.json();
+        } catch (e) {
+          // Fallback url
+          const fallbackResponse = await fetch(`https://${dateFormatted}.currency-api.pages.dev/v1/currencies/eur.json`);
+          data = await fallbackResponse.json();
+        }
         
-        if (data.rates && data.rates.MAD) {
-          const adjustedRate = data.rates.MAD - 0.0145;
+        if (data && data.eur && data.eur.mad) {
+          const adjustedRate = data.eur.mad - 0.0145;
           finalRate = adjustedRate.toFixed(4);
         }
       }
