@@ -314,14 +314,19 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </FilterSection>
 
                 <FilterSection title="Taux EUR/MAD" defaultOpen={false}>
-                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2">
-                    <span className="text-[10px] text-slate-500 font-medium">EUR→MAD</span>
-                    <input
-                      type="text"
-                      value={eurMadRate}
-                      onChange={(e) => setEurMadRate(e.target.value)}
-                      className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold text-accent dark:text-brand-yellow p-0 text-center"
-                    />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2">
+                      <span className="text-[10px] text-slate-500 font-medium">EUR→MAD</span>
+                      <input
+                        type="text"
+                        value={eurMadRate}
+                        onChange={(e) => setEurMadRate(e.target.value)}
+                        className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold text-accent dark:text-brand-yellow p-0 text-center"
+                      />
+                    </div>
+                    <p className="text-[9px] text-slate-400 italic px-1 leading-tight">
+                      * Note : Les BCD utilisent automatiquement le cours historique à la date de l'opération.
+                    </p>
                   </div>
                 </FilterSection>
               </div>
