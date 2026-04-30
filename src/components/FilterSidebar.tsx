@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, RotateCcw, ChevronDown, ChevronRight, SlidersHorizontal, X } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
@@ -105,6 +105,18 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   onReset
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [fuelPrice, setFuelPrice] = useState('11.50');
+
+  const refPrice = 10.50;
+  const weighting = 0.33;
+  
+  const fuelSurcharge = useMemo(() => {
+    const current = parseFloat(fuelPrice) || 0;
+    if (current <= 0) return 0;
+    // Surcharge (%) = ((Current / Ref) - 1) * Weighting * 100
+    const surcharge = ((current / refPrice) - 1) * weighting * 100;
+    return surcharge;
+  }, [fuelPrice]);
 
   const activeFiltersCount = [
     annee !== 'Tous',
@@ -327,6 +339,41 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     <p className="text-[9px] text-slate-400 italic px-1 leading-tight">
                       * Note : Les BCD utilisent automatiquement le cours historique à la date de l'opération.
                     </p>
+                  </div>
+                </FilterSection>
+
+                <FilterSection title="Index Gasoil" defaultOpen={false}>
+                  <div className="space-y-3">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] uppercase font-bold text-slate-400 px-1">Prix Actuel TTC (MAD)</label>
+                      <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2">
+                        <input
+                          type="text"
+                          value={fuelPrice}
+                          onChange={(e) => setFuelPrice(e.target.value)}
+                          className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold text-ink p-0 text-center"
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                        <p className="text-[8px] uppercase text-slate-400 font-bold mb-0.5">Réf. TTC</p>
+                        <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300">10.50 MAD</p>
+                      </div>
+                      <div className="bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                        <p className="text-[8px] uppercase text-slate-400 font-bold mb-0.5">Pondér.</p>
+                        <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300">33%</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-accent/5 dark:bg-accent/10 p-3 rounded-xl border border-accent/10 text-center">
+                      <p className="text-[9px] uppercase text-accent font-bold mb-1 tracking-wider">Surcharge Gasoil</p>
+                      <p className="text-xl font-black text-accent tabular-nums">
+                        {fuelSurcharge > 0 ? '+' : ''}{fuelSurcharge.toFixed(2)}%
+                      </p>
+                    </div>
                   </div>
                 </FilterSection>
               </div>
