@@ -167,7 +167,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, search, setSearch, o
                       {row.numTracteur || '-'}
                     </td>
                     <td className="px-4 py-4 text-xs font-bold text-right tabular-nums whitespace-nowrap">
-                      {formatCurrency(row.prixAchat)}
+                      {formatCurrency(row.prixAchat, row.devise)}
                     </td>
                     <td className="px-4 py-4"><StatusBadge status={row.status} /></td>
                     <td className="px-4 py-4 text-center text-[10px] font-bold text-accent whitespace-nowrap">

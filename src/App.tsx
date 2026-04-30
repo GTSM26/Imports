@@ -74,29 +74,35 @@ export default function App() {
               
               if (anneeExtracted.length > 4) anneeExtracted = anneeExtracted.substring(0, 4); // Handle potential junk
               
+              const priceMAD = parsePrice(row['Prix Achat MAD'] || row['Vente MAD'] || row['MAD'] || '');
+              const priceEUR = parsePrice(row['Prix Achat €'] || row['Prix Achat'] || '');
+              
+              const isMAD = priceMAD > 0 || (row['Devise'] || '').trim().toUpperCase() === 'MAD';
+
               return {
                 dateChargement: dateStr,
                 annee: anneeExtracted,
                 sem: (row['Sem'] || '').trim(),
                 mois: (row['Mois'] || '').trim(),
-              pays: (row['Pays'] || '').trim(),
-              type: (row['Type'] || '').trim(),
-              mpl: (row['MPL'] || '').trim(),
-              lieuChargement: (row['Lieu de chargement'] || '').trim(),
-              vehicule: (row['Véhicule'] || '').trim(),
-              transporteur: (row['Transporteur'] || '').trim(),
-              prixAchat: parsePrice(row['Prix Achat €']),
-              dateDepart: (row['Date de départ'] || '').trim(),
-              refDossier: (row['Réf Dossier'] || row['Ref Dossier'] || row['Reference'] || row['Ref'] || row['REF'] || '').trim(),
-              bcd: (row['BCD'] || '').trim(),
-              agenceMA: (row['Agence MA'] || row['BCD'] || '').trim(),
-              numRemorque: (row['N°: Remorque'] || row['N° Remorque'] || '').trim(),
-              numTracteur: (row['N°: Tracteur'] || row['N° Tracteur'] || '').trim(),
-              status: (row['Status'] || '').trim(),
-              observations: (row['Observations'] || '').trim(),
-              tauxChange: (row['Taux'] || row['Taux Change'] || row['Cours'] || '').trim(),
-              incident: (row['Incident'] || row['Incidents'] || '').trim(),
-            };
+                pays: (row['Pays'] || '').trim(),
+                type: (row['Type'] || '').trim(),
+                mpl: (row['MPL'] || '').trim(),
+                lieuChargement: (row['Lieu de chargement'] || '').trim(),
+                vehicule: (row['Véhicule'] || '').trim(),
+                transporteur: (row['Transporteur'] || '').trim(),
+                prixAchat: isMAD ? priceMAD : priceEUR,
+                devise: isMAD ? 'MAD' : 'EUR',
+                dateDepart: (row['Date de départ'] || '').trim(),
+                refDossier: (row['Réf Dossier'] || row['Ref Dossier'] || row['Reference'] || row['Ref'] || row['REF'] || '').trim(),
+                bcd: (row['BCD'] || '').trim(),
+                agenceMA: (row['Agence MA'] || row['BCD'] || '').trim(),
+                numRemorque: (row['N°: Remorque'] || row['N° Remorque'] || '').trim(),
+                numTracteur: (row['N°: Tracteur'] || row['N° Tracteur'] || '').trim(),
+                status: (row['Status'] || '').trim(),
+                observations: (row['Observations'] || '').trim(),
+                tauxChange: (row['Taux'] || row['Taux Change'] || row['Cours'] || '').trim(),
+                incident: (row['Incident'] || row['Incidents'] || '').trim(),
+              };
           });
 
           setData(cleanedData);
@@ -236,13 +242,17 @@ export default function App() {
   }, [data, search, annee, status, pays, vehicule, semaine, transporteur, mois, typeOp, bcd, mpl, agenceMA]);
 
   const stats: DashboardStats = useMemo(() => {
+    const rate = parseFloat(eurMadRate) || 10.85;
     return {
       totalEnvois: data.length,
       enTransitCount: data.filter(item => item.status === 'En Transit').length,
-      chiffreAchatTotal: data.reduce((acc, curr) => acc + curr.prixAchat, 0),
+      chiffreAchatTotal: data.reduce((acc, curr) => {
+        const val = curr.devise === 'MAD' ? curr.prixAchat / rate : curr.prixAchat;
+        return acc + val;
+      }, 0),
       paysActifsCount: availablePays.length,
     };
-  }, [data, availablePays]);
+  }, [data, availablePays, eurMadRate]);
 
   const handleRowClick = (op: TransportOp) => {
     setSelectedOp(op);
@@ -365,7 +375,7 @@ export default function App() {
             <ChartsSection data={filteredData} isDarkMode={isDarkMode} />
           </div>
         ) : (
-          <CarrierAnalyticsDashboard data={filteredData} isDarkMode={isDarkMode} />
+          <CarrierAnalyticsDashboard data={filteredData} isDarkMode={isDarkMode} eurMadRate={eurMadRate} />
         )}
       </main>
 

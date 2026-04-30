@@ -100,7 +100,7 @@ export const DetailDrawer: React.FC<DetailDrawerProps> = ({ isOpen, onClose, op,
 
               <div className="grid grid-cols-2 border-b border-slate-100 dark:border-slate-800/50">
                  <div className="border-r border-slate-100 dark:border-slate-800/50">
-                   <DetailItem icon={Tag} label="Prix Achat" value={formatCurrency(op.prixAchat)} />
+                   <DetailItem icon={Tag} label="Prix Achat" value={formatCurrency(op.prixAchat, op.devise)} />
                  </div>
                  <div>
                    <DetailItem icon={Calendar} label="Date Départ" value={op.dateDepart} />

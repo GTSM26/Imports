@@ -20,6 +20,7 @@ export interface TransportOp {
   observations: string;
   tauxChange?: string;
   incident?: string;
+  devise: 'EUR' | 'MAD';
 }
 
 export type TransportStatus = 'En Transit' | 'Chargé' | 'Embarqué' | 'Arrivée' | string;

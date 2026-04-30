@@ -107,8 +107,8 @@ export const generateBCD = async (op: TransportOp, defaultRate?: string) => {
   doc.setFont('helvetica', 'bold');
   doc.text(operationDate, boxX + 55, boxY + 15);
 
-  // Exchange Rate (BKAM)
-  if (finalRate) {
+  // Exchange Rate (BKAM) - Only show for EUR operations
+  if (finalRate && op.devise !== 'MAD') {
     doc.setFontSize(7);
     doc.setTextColor(120);
     doc.setFont('helvetica', 'italic');
@@ -192,7 +192,7 @@ export const generateBCD = async (op: TransportOp, defaultRate?: string) => {
   doc.setFontSize(11);
   doc.setTextColor(0);
   // Clean price display to avoid "3 /314 €"
-  const cleanPrice = String(formatCurrency(op.prixAchat)).replace(/\s/g, ' ');
+  const cleanPrice = String(formatCurrency(op.prixAchat, op.devise)).replace(/\s/g, ' ');
   doc.text(cleanPrice, pageWidth - 25, currentY + 17, { align: 'right' });
 
   // --- FOOTER SECTION ---

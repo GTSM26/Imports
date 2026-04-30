@@ -34,10 +34,12 @@ ChartJS.register(
 interface CarrierAnalyticsDashboardProps {
   data: TransportOp[];
   isDarkMode: boolean;
+  eurMadRate: string;
 }
 
-export const CarrierAnalyticsDashboard: React.FC<CarrierAnalyticsDashboardProps> = ({ data, isDarkMode }) => {
+export const CarrierAnalyticsDashboard: React.FC<CarrierAnalyticsDashboardProps> = ({ data, isDarkMode, eurMadRate }) => {
   const enrichedData = useMemo(() => enrichData(data), [data]);
+  const rate = parseFloat(eurMadRate) || 10.85;
 
   const textColor = isDarkMode ? '#f1f5f9' : '#0f172a';
   const gridColor = isDarkMode ? 'rgba(31, 41, 55, 0.5)' : 'rgba(226, 232, 240, 0.5)';
@@ -50,16 +52,21 @@ export const CarrierAnalyticsDashboard: React.FC<CarrierAnalyticsDashboardProps>
   
   const conformityRate = ((conformantOps / totalOps) * 100).toFixed(1);
   const incidentRate = ((incidentOps / totalOps) * 100).toFixed(1);
-  const avgCost = enrichedData.reduce((acc, curr) => acc + curr.prixAchat, 0) / totalOps;
+  const totalCostEUR = enrichedData.reduce((acc, curr) => {
+    const val = curr.devise === 'MAD' ? curr.prixAchat / rate : curr.prixAchat;
+    return acc + val;
+  }, 0);
+  const avgCost = totalCostEUR / totalOps;
 
   // 2. Leaderboard calculation
   const carrierStats = useMemo(() => {
-    const stats: Record<string, { ops: number, cost: number, co2: number, conformant: number, incidents: number }> = {};
+    const stats: Record<string, { ops: number, costEUR: number, co2: number, conformant: number, incidents: number }> = {};
     enrichedData.forEach(op => {
       const t = op.transporteur || 'Inconnu';
-      if (!stats[t]) stats[t] = { ops: 0, cost: 0, co2: 0, conformant: 0, incidents: 0 };
+      if (!stats[t]) stats[t] = { ops: 0, costEUR: 0, co2: 0, conformant: 0, incidents: 0 };
       stats[t].ops += 1;
-      stats[t].cost += op.prixAchat;
+      const val = op.devise === 'MAD' ? op.prixAchat / rate : op.prixAchat;
+      stats[t].costEUR += val;
       stats[t].co2 += op.co2Emissions;
       if (op.isConformant) stats[t].conformant += 1;
       if (op.hasIncident) stats[t].incidents += 1;
@@ -69,19 +76,20 @@ export const CarrierAnalyticsDashboard: React.FC<CarrierAnalyticsDashboardProps>
       name,
       ...data,
       conformityRate: (data.conformant / data.ops) * 100,
-      avgCost: data.cost / data.ops
+      avgCost: data.costEUR / data.ops
     })).sort((a, b) => b.conformityRate - a.conformityRate); // Sort by conformity by default
-  }, [enrichedData]);
+  }, [enrichedData, rate]);
 
   // 4. Cost Breakdown by Type
   const costByType = useMemo(() => {
     const costs: Record<string, number> = {};
     enrichedData.forEach(op => {
       const t = op.type || 'Inconnu';
-      costs[t] = (costs[t] || 0) + op.prixAchat;
+      const val = op.devise === 'MAD' ? op.prixAchat / rate : op.prixAchat;
+      costs[t] = (costs[t] || 0) + val;
     });
     return costs;
-  }, [enrichedData]);
+  }, [enrichedData, rate]);
 
   const costData = {
     labels: Object.keys(costByType),
