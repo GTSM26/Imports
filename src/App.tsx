@@ -7,7 +7,7 @@ import { DataTable } from './components/DataTable';
 import { ChartsSection } from './components/ChartsSection';
 import { DetailDrawer } from './components/DetailDrawer';
 import { TransportOp, DashboardStats } from './types';
-import { CSV_URL } from './constants';
+import { CSV_URL_IMPORTS, CSV_URL_EXPORTS } from './constants';
 import { parsePrice } from './lib/utils';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
@@ -16,6 +16,7 @@ import { CarrierAnalyticsDashboard } from './components/analytics/CarrierAnalyti
 export default function App() {
   const [data, setData] = useState<TransportOp[]>([]);
   const [currentView, setCurrentView] = useState<'operations' | 'analytics'>('operations');
+  const [direction, setDirection] = useState<'import' | 'export'>('import');
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +56,9 @@ export default function App() {
     
     setError(null);
 
-    Papa.parse(`${CSV_URL}&_t=${new Date().getTime()}`, {
+    const activeURL = direction === 'import' ? CSV_URL_IMPORTS : CSV_URL_EXPORTS;
+
+    Papa.parse(`${activeURL}&_t=${new Date().getTime()}`, {
       download: true,
       header: true,
       skipEmptyLines: true,
@@ -128,7 +131,7 @@ export default function App() {
     // Refresh every 5 minutes
     const interval = setInterval(() => fetchData(), 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [fetchData]);
+  }, [fetchData, direction]);
 
   // Fetch EUR/MAD rate
   useEffect(() => {
@@ -330,6 +333,11 @@ export default function App() {
         isRefreshing={isRefreshing}
         currentView={currentView}
         onViewChange={setCurrentView}
+        direction={direction}
+        onDirectionChange={(dir) => {
+          setDirection(dir);
+          handleResetFilters();
+        }}
       />
       
       <main className="flex flex-col gap-4">

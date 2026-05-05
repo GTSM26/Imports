@@ -11,6 +11,8 @@ interface HeaderProps {
   isRefreshing: boolean;
   currentView: 'operations' | 'analytics';
   onViewChange: (view: 'operations' | 'analytics') => void;
+  direction: 'import' | 'export';
+  onDirectionChange: (dir: 'import' | 'export') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -20,7 +22,9 @@ export const Header: React.FC<HeaderProps> = ({
   toggleDarkMode,
   isRefreshing,
   currentView,
-  onViewChange
+  onViewChange,
+  direction,
+  onDirectionChange
 }) => {
   return (
     <header className="header-theme sticky top-0 z-40 w-full flex items-center justify-between px-6">
@@ -33,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
         </motion.div>
         <div className="flex items-center gap-5">
            <h1 className="text-xl font-extrabold tracking-tight text-white leading-none">
-             GTSM <span className="bg-gradient-to-r from-brand-yellow to-amber-400 bg-clip-text text-transparent">Imports</span>
+             GTSM <span className="bg-gradient-to-r from-brand-yellow to-amber-400 bg-clip-text text-transparent">{direction === 'import' ? 'Imports' : 'Exports'}</span>
            </h1>
            {lastSync && (
              <div className="flex items-center gap-2 border-l border-slate-600/50 pl-5">
@@ -49,8 +53,36 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 flex justify-center">
+      <div className="flex-1 flex justify-center gap-4">
+        {/* Direction Toggle */}
         <div className="bg-slate-900/50 dark:bg-slate-800/80 p-1 rounded-xl flex items-center gap-1 border border-slate-700/50">
+          <button
+            onClick={() => onDirectionChange('import')}
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+              direction === 'import' 
+                ? "bg-brand-yellow text-slate-900 shadow-md" 
+                : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+            )}
+          >
+            Imports
+          </button>
+          <button
+            onClick={() => onDirectionChange('export')}
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+              direction === 'export' 
+                ? "bg-brand-yellow text-slate-900 shadow-md" 
+                : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+            )}
+          >
+            Exports
+          </button>
+        </div>
+
+        {/* View Toggle */}
+        <div className="bg-slate-900/50 dark:bg-slate-800/80 p-1 rounded-xl flex items-center gap-1 border border-slate-700/50">
+
           <button
             onClick={() => onViewChange('operations')}
             className={cn(

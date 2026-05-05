@@ -1,4 +1,5 @@
-export const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_rdvTpzG_R3Un1eDXvu0n9JwnB7NG3vqcs3_ShXZn9yCrSrJabcy9FwRdU1qtdLwPjamPd0vNOtG_/pub?output=csv';
+export const CSV_URL_IMPORTS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_rdvTpzG_R3Un1eDXvu0n9JwnB7NG3vqcs3_ShXZn9yCrSrJabcy9FwRdU1qtdLwPjamPd0vNOtG_/pub?output=csv';
+export const CSV_URL_EXPORTS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR_rdvTpzG_R3Un1eDXvu0n9JwnB7NG3vqcs3_ShXZn9yCrSrJabcy9FwRdU1qtdLwPjamPd0vNOtG_/pub?output=csv&gid=1428313444';
 
 export const STATUS_COLORS: Record<string, string> = {
   'En Transit': 'bg-[#dbeafe] text-[#1e40af] border-blue-200 dark:bg-blue-900/30 dark:text-blue-200',
