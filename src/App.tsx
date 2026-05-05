@@ -98,7 +98,7 @@ export default function App() {
                 dateDepart: (row['Date de départ'] || '').trim(),
                 refDossier: (row['Réf Dossier'] || row['Ref Dossier'] || row['Reference'] || row['Ref'] || row['REF'] || '').trim(),
                 bcd: (row['BCD'] || '').trim(),
-                agenceMA: (row['Agence MA'] || row['BCD'] || '').trim(),
+                agenceMA: (row['Agence MA'] || row['Destination'] || row['BCD'] || '').trim(),
                 numRemorque: (row['N°: Remorque'] || row['N° Remorque'] || '').trim(),
                 numTracteur: (row['N°: Tracteur'] || row['N° Tracteur'] || '').trim(),
                 status: (row['Status'] || '').trim(),
