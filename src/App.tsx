@@ -124,7 +124,7 @@ export default function App() {
         setIsRefreshing(false);
       }
     });
-  }, []);
+  }, [direction]);
 
   useEffect(() => {
     fetchData();
